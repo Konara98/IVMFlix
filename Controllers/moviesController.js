@@ -3,7 +3,7 @@ const Movie = require('./../Models/movieModel');
 exports.getAllMovies = async (req, res) => {
     try{
         //exclude unwanted filtering objects
-        const excludeFields = ['sort', 'page', 'limit', 'fields'];
+        const excludeFields = ['sort', 'fields', 'page', 'limit'];
         const excludedQueryObj = {...req.query};
         excludeFields.forEach((el) => {
             delete excludedQueryObj[el];
@@ -29,6 +29,19 @@ exports.getAllMovies = async (req, res) => {
             const fields = req.query.fields.split(',').join(' ');
             query = query.select(fields);
         } 
+
+        //pagination
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+        const skip = (page - 1)*limit;
+        query = query.skip(skip).limit(limit);
+
+        if(req.query.page){
+            const movieCount = await Movie.countDocuments();
+            if(skip >= movieCount){
+                throw new Error("Thispage is not found!");
+            }
+        }
 
         const movies = await query;             //return array
 
