@@ -7,7 +7,6 @@ const app = require('./app');
 mongoose.connect(process.env.CONN_STR, {
     useNewUrlParser: true
 }).then((conn) => {
-    // console.log(conn);
     console.log('DB connection succesful!');
 }).catch((error) => {
     console.log('Database connection failed!');
