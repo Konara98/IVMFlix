@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-with-express",
+  "version": "1.0.0",
+  "description": "learning nodejs with express",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Konara Lakshitha",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "morgan": "^1.10.0"
+  }
+}
