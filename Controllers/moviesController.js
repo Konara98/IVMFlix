@@ -1,5 +1,12 @@
 const Movie = require('./../Models/movieModel');
 
+exports.getHighestRatedMovies = (req, res, next) => {
+    req.query.sort = '-ratings';
+    req.query.limit = '5';
+
+    next();
+}
+
 exports.getAllMovies = async (req, res) => {
     try{
         //exclude unwanted filtering objects
