@@ -1,4 +1,5 @@
 const Movie = require('./../Models/movieModel');
+const ApiFeatures = require('./../Utils/ApiFeatures');
 
 exports.getHighestRatedMovies = (req, res, next) => {
     req.query.sort = '-ratings';
@@ -9,48 +10,16 @@ exports.getHighestRatedMovies = (req, res, next) => {
 
 exports.getAllMovies = async (req, res) => {
     try{
-        //exclude unwanted filtering objects
-        const excludeFields = ['sort', 'fields', 'page', 'limit'];
-        const excludedQueryObj = {...req.query};
-        excludeFields.forEach((el) => {
-            delete excludedQueryObj[el];
-        })
+        let features = new ApiFeatures(Movie.find(), req.query, ['sort', 'fields', 'page', 'limit'])
+                                            .filter();                                                                      //Object to find the movie count and add it to below object
+        const moviesCount = await features.query.countDocuments();
 
-        //apply filtering
-        let queryStr = JSON.stringify(excludedQueryObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-        const queryObj = JSON.parse(queryStr);
-
-        let query = Movie.find(queryObj);       //return query object
-
-        //sorting logic
-        if(req.query.sort){
-            const sortBy = req.query.sort.split(',').join(' ');
-            query = query.sort(sortBy);
-        } else{
-            query = query.sort('-releaseDate');
-        }
-
-        //limiting logic
-        if(req.query.fields){
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
-        } 
-
-        //pagination
-        const page = req.query.page || 1;
-        const limit = req.query.limit || 10;
-        const skip = (page - 1)*limit;
-        query = query.skip(skip).limit(limit);
-
-        if(req.query.page){
-            const movieCount = await Movie.countDocuments();
-            if(skip >= movieCount){
-                throw new Error("Thispage is not found!");
-            }
-        }
-
-        const movies = await query;             //return array
+        features = new ApiFeatures(Movie.find(), req.query, ['sort', 'fields', 'page', 'limit'], moviesCount)
+                                            .filter()
+                                            .sort()
+                                            .limitFields()
+                                            .paginate();
+        const movies = await features.query;
 
         res.status(200).json({
             status: 'success',
