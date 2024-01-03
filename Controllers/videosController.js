@@ -1,8 +1,25 @@
 const Video = require('./../Models/videoModel');
+const ApiFeatures = require('./../Utils/ApiFeatures');
+
+exports.getHighestRatedVideos = (req, res, next) => {
+    req.query.sort = '-ratings';
+    req.query.limit = '5';
+
+    next();
+}
 
 exports.getAllVideos = async (req, res) => {
     try{
-        const videos = await Video.find();
+        let features = new ApiFeatures(Video.find(), req.query, ['sort', 'fields', 'page', 'limit'])
+                                            .filter();                                                                      //Object to find the movie count and add it to below object
+        const videosCount = await features.query.countDocuments();
+
+        features = new ApiFeatures(Video.find(), req.query, ['sort', 'fields', 'page', 'limit'], videosCount)
+                                            .filter()
+                                            .sort()
+                                            .limitFields()
+                                            .paginate();
+        const videos = await features.query;
 
         res.status(200).json({
             status: 'success',

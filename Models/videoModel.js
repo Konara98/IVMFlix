@@ -31,14 +31,15 @@ const videosSchema = new mongoose.Schema({
     },
     createdDate: {
         type: Date,
-        default: Date.now()
+        default: Date.now(),
+        select: false
     },
-    producer: {
-        type: String,
-        required: [true, 'Producer is required!']
+    genres: {
+        type: [String],
+        required: [true, 'Genres is required!']
     },
-    director: {
-        type: String,
+    directors: {
+        type: [String],
         required: [true, 'Directors is required!']
     },
     coverImage: {

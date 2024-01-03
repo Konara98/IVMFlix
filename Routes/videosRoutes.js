@@ -3,6 +3,9 @@ const videosController = require('./../Controllers/videosController');
 
 const videosRouter = express.Router();
 
+videosRouter.route('/highest-rated')
+    .get(videosController.getHighestRatedVideos, videosController.getAllVideos)
+
 videosRouter.route('/')
     .get(videosController.getAllVideos)
     .post(videosController.createVideo)
