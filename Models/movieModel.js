@@ -9,8 +9,7 @@ const movieSchema = new mongoose.Schema({
         unique: true,
         maxlength: [100, 'Movie name must not have more than 100 characters'],
         minlength: [3, 'Movie name must not have less than 3 characters'],
-        trim: true,
-        validate: [validator.isAlpha, 'Name must be only contain alphabets!']
+        trim: true
     },
     description: {
         type: String,
@@ -61,7 +60,8 @@ const movieSchema = new mongoose.Schema({
     },
     coverImage: {
         type: String,
-        required: [true, 'Cover Image is required!']
+        required: [true, 'Cover Image is required!'],
+        validate: [validator.isURL, 'Cover Image must be a URL!']
     },
     actors: {
         type: [String],
