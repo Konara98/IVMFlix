@@ -83,9 +83,15 @@ movieSchema.post('save', function(doc, next){
     next();
 })
 
-//Pre hook: exceute before the query object is saved return
+//Pre hook: exceute before the query object is return
 movieSchema.pre('find', function(next){
     this.find({releaseDate: {$lte: Date.now()}});
+    next();
+})
+
+//Pre hook: exceute before the aggregate object is return
+movieSchema.pre('aggregate', function(next){
+    this.pipeline().unshift({$match: {releaseDate: {$lte: new Date()}}});
     next();
 })
 
