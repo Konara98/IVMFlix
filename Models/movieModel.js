@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 const movieSchema = new mongoose.Schema({
     name: {
@@ -53,6 +54,9 @@ const movieSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: [true, 'Price is required!']
+    },
+    createdBy: {
+        type: String
     }
 }, {
     toJSON: {virtuals: true},
@@ -61,6 +65,22 @@ const movieSchema = new mongoose.Schema({
 
 movieSchema.virtual('durationInHours').get(function(){
     return this.duration/60;
+})
+
+//Pre hook: exceute before the document is saved in DB
+//.save() or .create() will work
+movieSchema.pre('save', function(next){
+    this.createdBy = 'Lakshitha';
+    next();
+})
+
+//Post hook: exceute after the document is saved in DB
+movieSchema.post('save', function(doc, next){
+    const context = `A new movie document with ${doc.name} has been created by ${doc.createdBy}\n`
+    fs.appendFileSync('./Logs/log.txt', context, (err) => {
+        console.log(err.message);
+    });
+    next();
 })
 
 const Movie = mongoose.model('movie', movieSchema);
