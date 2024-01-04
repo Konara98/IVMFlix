@@ -83,6 +83,12 @@ movieSchema.post('save', function(doc, next){
     next();
 })
 
+//Pre hook: exceute before the query object is saved return
+movieSchema.pre('find', function(next){
+    this.find({releaseDate: {$lte: Date.now()}});
+    next();
+})
+
 const Movie = mongoose.model('movie', movieSchema);
 
 module.exports = Movie;
