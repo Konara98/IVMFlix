@@ -20,5 +20,12 @@ app.use((req, res, next) => {               //Custom middleware
             
 app.use('/api/v1/movies', moviesRouter);
 app.use('/api/v1/videos', videosRouter);
+app.all('*', (req, res, next) => {
+    res.status(404).json({
+        status: 'fail',
+        message: `Can't find ${req.originalUrl} on this server!`
+    })
+    next();
+});
 
 module.exports = app;
