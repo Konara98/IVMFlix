@@ -1,6 +1,7 @@
 const Video = require('./../Models/videoModel');
 const ApiFeatures = require('./../Utils/ApiFeatures');
 const asyncErrorHandler = require('./../Utils/asyncErrorHandler');
+const CustomError = require('./../Utils/CustomError');
 
 exports.getHighestRatedVideos = (req, res, next) => {
     req.query.sort = '-ratings';
@@ -33,6 +34,11 @@ exports.getAllVideos = asyncErrorHandler(async (req, res, next) => {
 exports.getVideo = asyncErrorHandler(async (req, res, next) => {
     const video = await Video.find(req.params);
 
+    if(video.length == 0){
+        const error = new CustomError('Video with that name is not found!', 404);
+        return next(error);             //return: avoid run rest of the code
+    }
+
     res.status(200).json({
         status: 'success',
         data: {
@@ -41,7 +47,7 @@ exports.getVideo = asyncErrorHandler(async (req, res, next) => {
     })
 });
 
-exports.createVideo = asyncErrorHandler(async (req, res) => {
+exports.createVideo = asyncErrorHandler(async (req, res, next) => {
     const newVideo = await Video.create(req.body);
 
     res.status(201).json({
@@ -52,8 +58,13 @@ exports.createVideo = asyncErrorHandler(async (req, res) => {
     })
 });
 
-exports.updateVideo = asyncErrorHandler(async (req, res) => {
+exports.updateVideo = asyncErrorHandler(async (req, res, next) => {
     const updatedVideo = await Video.findOneAndUpdate(req.params, req.body, {new: true, runValidators: true});
+
+    if(!updatedVideo){
+        const error = new CustomError('Video with that name is not found!', 404);
+        return next(error);
+    }
 
     res.status(200).json({
         status: 'success',
@@ -63,8 +74,13 @@ exports.updateVideo = asyncErrorHandler(async (req, res) => {
     })
 });
 
-exports.deleteVideo = asyncErrorHandler(async (req, res) => {
-    await Video.findOneAndDelete(req.params);
+exports.deleteVideo = asyncErrorHandler(async (req, res, next) => {
+    const deletedVideo = await Video.findOneAndDelete(req.params);
+
+    if(!deletedVideo){
+        const error = new CustomError('Video with that name is not found!', 404);
+        return next(error);
+    }
 
     res.status(204).json({
         status: 'success',
@@ -72,7 +88,7 @@ exports.deleteVideo = asyncErrorHandler(async (req, res) => {
     })
 });
 
-exports.getVideoByGenre = asyncErrorHandler(async (req, res) => {
+exports.getVideoByGenre = asyncErrorHandler(async (req, res, next) => {
     const genre = req.params.genre;
     const videos = await Video.aggregate([
         {$unwind: '$genres'},
@@ -97,7 +113,7 @@ exports.getVideoByGenre = asyncErrorHandler(async (req, res) => {
     })
 });
 
-exports.getVideoByDirector = asyncErrorHandler(async (req, res) => {
+exports.getVideoByDirector = asyncErrorHandler(async (req, res, next) => {
     const director = req.params.director;
     const videos = await Video.aggregate([
         {$unwind: '$directors'},
