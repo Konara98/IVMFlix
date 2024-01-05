@@ -11,7 +11,7 @@ exports.getHighestRatedVideos = (req, res, next) => {
 exports.getAllVideos = async (req, res) => {
     try{
         let features = new ApiFeatures(Video.find(), req.query, ['sort', 'fields', 'page', 'limit'])
-                                            .filter();                                                                      //Object to find the movie count and add it to below object
+                                            .filter();                                                                      //Object to find the video count and add it to below object
         const videosCount = await features.query.countDocuments();
 
         features = new ApiFeatures(Video.find(), req.query, ['sort', 'fields', 'page', 'limit'], videosCount)
@@ -97,6 +97,70 @@ exports.deleteVideo = async (req, res) => {
         res.status(204).json({
             status: 'success',
             data: null
+        })
+    } catch(err){
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        })
+    }
+}
+
+exports.getVideoByGenre = async (req, res) => {
+    try{
+        const genre = req.params.genre;
+        const videos = await Video.aggregate([
+            {$unwind: '$genres'},
+            {$group: {
+                _id: '$genres',
+                videoCount: {$sum: 1},
+                videos: {$push: '$name'},
+
+            }},
+            {$addFields: {genre: '$_id'}},
+            {$project: {_id: 0}},
+            {$sort: {videoCount: -1}},
+            {$match: {genre: genre}}
+        ]);
+
+        res.status(200).json({
+            status: 'success',
+            length: videos.length,
+            data: {
+                videos
+            }
+        })
+    } catch(err){
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        })
+    }
+}
+
+exports.getVideoByDirector = async (req, res) => {
+    try{
+        const director = req.params.director;
+        const videos = await Video.aggregate([
+            {$unwind: '$directors'},
+            {$group: {
+                _id: '$directors',
+                videoCount: {$sum: 1},
+                videos: {$push: '$name'},
+
+            }},
+            {$addFields: {director: '$_id'}},
+            {$project: {_id: 0}},
+            {$sort: {videoCount: -1}},
+            {$match: {director: director}}
+        ]);
+
+        res.status(200).json({
+            status: 'success',
+            length: videos.length,
+            data: {
+                videos
+            }
         })
     } catch(err){
         res.status(404).json({
