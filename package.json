@@ -4,7 +4,8 @@
   "description": "learning nodejs with express",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "SET NODE_ENV=development& nodemon server.js",
+    "start_prod": "SET NODE_ENV=production& nodemon server.js"
   },
   "author": "Konara Lakshitha",
   "license": "ISC",
