@@ -8,13 +8,20 @@ mongoose.connect(process.env.CONN_STR, {
     useNewUrlParser: true
 }).then((conn) => {
     console.log('DB connection succesful!');
-}).catch((error) => {
-    console.log('Database connection failed!');
 })
 
 //create the server
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log('Server has started...');
+})
+
+process.on('unhandledRejection', (err) => {
+    console.log(err.name, err.message);
+    console.log('Unhandled rejection occured! Shutting down...');
+
+    server.close(() => {
+        process.exit(1);
+    })
 })
