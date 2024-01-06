@@ -29,16 +29,23 @@ const duplicateKeyErrorHandler = (err) => {
     return new CustomError(msg, 400); 
 }
 
-exports.globalErrorHandler = (error, req, res, next) => {        //global error handling
+const validationErrorHandler = (err) => {
+    const errors = Object.values(err.errors).map(val => val.message);
+    const errorMessages =  errors.join(', ');
+    const msg = `Invalid input data: ${errorMessages}`;
+
+    return new CustomError(msg, 400); 
+}
+
+exports.globalErrorHandler = (error, req, res, next) => {                   //global error handling
     error.statusCode = error.statusCode || 500;
     error.status = error.status || 'error';
 
     if(process.env.NODE_ENV == 'development'){
         devErrors(res, error);
     } else if (process.env.NODE_ENV == 'production'){
-        if(error.code == 11000){
-            error = duplicateKeyErrorHandler(error);
-        } 
+        if(error.code === 11000) error = duplicateKeyErrorHandler(error);               //Handle duplicate key error
+        if(error.name === 'ValidationError') error = validationErrorHandler(error);    //Handle duplicate key error
         prodErrors(res, error);
     }
 }
