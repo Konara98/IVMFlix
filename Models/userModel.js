@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -35,12 +36,14 @@ const userSchema = new mongoose.Schema({
         //validator will work on save() or create() methods
         validate: {
             validator: function(value){
-                return value == this.password;
+                return value === this.password;
             },
             message: 'Password and confirm password does not match'
         }
     },
-    passwordChangedAt: Date
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpire: Date
 })
 
 userSchema.pre('save', async function(next){
@@ -63,6 +66,15 @@ userSchema.methods.isPasswordChanged = async function(JWTTimeStamp){
     } else{
         return false;
     }
+}
+
+userSchema.methods.createResetPasswordToken = async function(){
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    this.passwordResetTokenExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 }
 
 const User = mongoose.model('user', userSchema);

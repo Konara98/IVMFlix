@@ -2,6 +2,8 @@ const User = require('./../Models/userModel');
 const asyncErrorHandler = require('./../Utils/asyncErrorHandler');
 const jwt = require('jsonwebtoken');
 const CustomError = require('./../Utils/CustomError');
+const sendEmail = require('./../Utils/email');
+const crypto = require('crypto');
 
 const signToken = (id, email) => {
     return jwt.sign({id, email}, process.env.SECRETE_STR, {
@@ -101,3 +103,70 @@ exports.restrict = (role) => {
 //         next();
 //     }
 // }
+
+exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
+    //1. Get user based on posted email
+    const email = req.body.email;
+    if(!email){
+        return next(new CustomError('Please provide email for reset password!', 400));
+    }
+
+    const user = await User.findOne({email: email});
+    if(!user){
+        return next(new CustomError('Could not find the user with the given email!', 404));
+    }
+
+    //2. Generate a random reset token
+    const resetToken = await user.createResetPasswordToken();
+    await user.save({validateBeforeSave: false});           //only validate when create and update a user
+    
+    //3. Send the token back to the user email
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetpassword/${resetToken}`;
+    const message = `We have recieved a password reset request. Please use the below link to reset your password\n\n${resetUrl}\n\nThis reset password link will be valid only for 10 miniutes.`;
+    try{
+        await sendEmail({
+            email: user.email,
+            subject: 'Password change request recieved',
+            message: message
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Password reset link send to the user email'
+        });
+    } catch(err){
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpire = undefined;
+        user.save({validateBeforeSave: false});
+
+        return next(new CustomError('There was an error sending password reset email. Please try again later!', 500));
+    }
+})
+
+exports.resetPassword = asyncErrorHandler(async (req, res, next) => {
+    const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
+    const user = await User.findOne({passwordResetToken: token, passwordResetTokenExpire: {$gt: Date.now()}});
+
+    if(!user){
+        return next(new CustomError('Token is invalid or has expired!', 400));
+    }
+
+    if(!req.body.password || !req.body.confirmPassword){
+        return next(new CustomError('Please provide password and confirmPassword for reset password!', 400));
+    }
+
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpire = undefined;
+    user.passwordChangedAt = Date.now();
+
+    await user.save();
+
+    const loginToken = signToken(user._id, user.email);
+
+    res.status(201).json({
+        status: 'success',
+        token: loginToken
+    })
+});

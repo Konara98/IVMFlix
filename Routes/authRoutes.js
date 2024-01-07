@@ -9,4 +9,11 @@ authRouter.route('/signup')
 authRouter.route('/signin')
     .post(authController.login);
 
+authRouter.route('/forgotpassword')
+    .post(authController.forgotPassword);
+
+authRouter.route('/resetpassword/:token')
+    .patch(authController.resetPassword);
+
+
 module.exports = authRouter;
