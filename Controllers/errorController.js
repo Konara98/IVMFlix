@@ -37,6 +37,10 @@ const validationErrorHandler = (err) => {
     return new CustomError(msg, 400); 
 }
 
+const handleExpiredJWT = (err) => {
+    return new CustomError('JWT has expired. please login again!', 401); 
+}
+
 exports.globalErrorHandler = (error, req, res, next) => {                   //global error handling
     error.statusCode = error.statusCode || 500;
     error.status = error.status || 'error';
@@ -46,6 +50,7 @@ exports.globalErrorHandler = (error, req, res, next) => {                   //gl
     } else if (process.env.NODE_ENV == 'production'){
         if(error.code === 11000) error = duplicateKeyErrorHandler(error);               //Handle duplicate key error
         if(error.name === 'ValidationError') error = validationErrorHandler(error);    //Handle duplicate key error
+        if(error.name === 'TokenExpiredError') error = handleExpiredJWT(error);
         prodErrors(res, error);
     }
 }

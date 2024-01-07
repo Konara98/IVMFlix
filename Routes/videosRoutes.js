@@ -1,23 +1,24 @@
 const express = require('express');
 const videosController = require('./../Controllers/videosController');
+const authController = require('./../Controllers/authController');
 
 const videosRouter = express.Router();
 
 videosRouter.route('/highest-rated')
-    .get(videosController.getHighestRatedVideos, videosController.getAllVideos)
+    .get(authController.protect, videosController.getHighestRatedVideos, videosController.getAllVideos)
 
 videosRouter.route('/video-by-genre/:genre')
-    .get(videosController.getVideoByGenre)
+    .get(authController.protect, videosController.getVideoByGenre)
 
 videosRouter.route('/video-by-director/:director')
-    .get(videosController.getVideoByDirector)
+    .get(authController.protect, videosController.getVideoByDirector)
 
 videosRouter.route('/')
-    .get(videosController.getAllVideos)
+    .get(authController.protect, videosController.getAllVideos)
     .post(videosController.createVideo)
 
 videosRouter.route('/:name')
-    .get(videosController.getVideo)
+    .get(authController.protect, videosController.getVideo)
     .patch(videosController.updateVideo)
     .delete(videosController.deleteVideo)
 

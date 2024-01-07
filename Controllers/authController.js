@@ -49,3 +49,37 @@ exports.login = asyncErrorHandler(async (req, res, next) => {
         user
     })
 });
+
+exports.protect = asyncErrorHandler(async (req, res, next) => {
+    //1. Read token and check if it exists
+    const testToken = req.headers.authorization;
+    let token;
+
+    if(testToken && testToken.startsWith('Bearer')){
+        token = testToken.split(' ')[1];
+    }
+
+    if(!token){
+        return next(new CustomError('You are not logged in!', 401));
+    }
+
+    //2. validate the token
+    const decodedToken = jwt.verify(token, process.env.SECRETE_STR);
+
+    //3. If the user exists
+    const user = await User.findById(decodedToken.id);
+
+    if(!user){
+        return next(new CustomError('The user with the given token does not exists!', 401));
+    }
+
+    //4. If the user changed password after the token was issued
+    const isPasswordChanged = await user.isPasswordChanged(decodedToken.iat);
+    if(isPasswordChanged){
+        return next(new CustomError('The password has been changed recently. please login again!', 401));
+    }
+
+    //5. Allow user to access route
+    req.user = user;
+    next();
+});
