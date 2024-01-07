@@ -15,11 +15,11 @@ videosRouter.route('/video-by-director/:director')
 
 videosRouter.route('/')
     .get(authController.protect, videosController.getAllVideos)
-    .post(videosController.createVideo)
+    .post(authController.protect, videosController.createVideo)
 
 videosRouter.route('/:name')
     .get(authController.protect, videosController.getVideo)
-    .patch(videosController.updateVideo)
-    .delete(videosController.deleteVideo)
+    .patch(authController.protect, videosController.updateVideo)
+    .delete(authController.protect, videosController.deleteVideo)
 
 module.exports = videosRouter;

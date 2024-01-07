@@ -18,11 +18,11 @@ moviesRouter.route('/movie-by-director/:director')
 
 moviesRouter.route('/')
     .get(authController.protect, moviesController.getAllMovies)
-    .post(moviesController.createMovie)
+    .post(authController.protect, moviesController.createMovie)
 
 moviesRouter.route('/:name')
     .get(authController.protect, moviesController.getMovie)
-    .patch(moviesController.updateMovie)
-    .delete(moviesController.deleteMovie)
+    .patch(authController.protect, moviesController.updateMovie)
+    .delete(authController.protect, moviesController.deleteMovie)
 
 module.exports = moviesRouter;
