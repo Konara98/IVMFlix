@@ -7,9 +7,6 @@ const moviesRouter = express.Router();
 moviesRouter.route('/highest-rated')
     .get(authController.protect, moviesController.getHighestRatedMovies, moviesController.getAllMovies)
 
-moviesRouter.route('/movie-stats')
-    .get(authController.protect, moviesController.getMovieStats)
-
 moviesRouter.route('/movie-by-genre/:genre')
     .get(authController.protect, moviesController.getMovieByGenre)
 
