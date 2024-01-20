@@ -73,7 +73,8 @@ const movieSchema = new mongoose.Schema({
         required: [true, 'Price is required!']
     },
     createdBy: {
-        type: String
+        type: String,
+        default: 'Konara'
     }
 }, {
     toJSON: {virtuals: true},
@@ -84,12 +85,12 @@ movieSchema.virtual('durationInHours').get(function(){
     return this.duration/60;
 })
 
-//Pre hook: exceute before the document is saved in DB
+//Pre hook: exceute before the document is saved in DB(document middleware)
 //.save() or .create() will work
-movieSchema.pre('save', function(next){
-    this.createdBy = 'Lakshitha';
-    next();
-})
+// movieSchema.pre('save', function(next){
+//     this.createdBy = 'Lakshitha';
+//     next();
+// })
 
 //Post hook: exceute after the document is saved in DB
 movieSchema.post('save', function(doc, next){
@@ -100,13 +101,13 @@ movieSchema.post('save', function(doc, next){
     next();
 })
 
-//Pre hook: exceute before the query object is return
+//Pre hook: exceute before the query object is return(query middleware)
 movieSchema.pre('find', function(next){
     this.find({releaseDate: {$lte: Date.now()}});
     next();
 })
 
-//Pre hook: exceute before the aggregate object is return
+//Pre hook: exceute before the aggregate object is return(aggregate middleware)
 movieSchema.pre('aggregate', function(next){
     this.pipeline().unshift({$match: {releaseDate: {$lte: new Date()}}});
     next();
