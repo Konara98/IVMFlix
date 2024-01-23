@@ -82,7 +82,7 @@ exports.protect = asyncErrorHandler(async (req, res, next) => {
     }
 
     //5. Allow user to access route
-    req.user = user;
+    req.user = user;    //add user details to request
     next();
 });
 

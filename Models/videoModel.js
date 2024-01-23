@@ -73,10 +73,10 @@ const videosSchema = new mongoose.Schema({
 
 //Pre hook: exceute before the document is saved in DB
 //.save() or .create() will work
-videosSchema.pre('save', function(next){
-    this.createdBy = 'Lakshitha';
-    next();
-})
+// videosSchema.pre('save', function(next){
+//     this.createdBy = 'Lakshitha';
+//     next();
+// })
 
 //Pre hook: exceute before the query object is return
 videosSchema.pre('find', function(next){

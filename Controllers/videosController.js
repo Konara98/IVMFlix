@@ -48,6 +48,7 @@ exports.getVideo = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.createVideo = asyncErrorHandler(async (req, res, next) => {
+    req.body.createdBy = req.user.name;
     const newVideo = await Video.create(req.body);
 
     res.status(201).json({
