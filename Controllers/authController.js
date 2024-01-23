@@ -23,6 +23,8 @@ exports.signup = asyncErrorHandler(async (req, res, next) => {
             newUser
         }
     })
+    req.user = newUser;    //add user details to request
+    next();
 });
 
 exports.login = asyncErrorHandler(async (req, res, next) => {

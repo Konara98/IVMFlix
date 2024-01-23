@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const moviesRouter = require('./Routes/moviesRoutes');
 const videosRouter = require('./Routes/videosRoutes');
 const authRouter = require('./Routes/authRoutes');
-const itemsRouter = require('./Routes/itemsRoutes');
+const cartsRouter = require('./Routes/cartRoutes');
 const CustomError = require('./Utils/CustomError');
 const errorController = require('./Controllers/errorController');
 
@@ -24,7 +24,7 @@ app.use((req, res, next) => {               //Custom middleware
             
 app.use('/api/v1/movies', moviesRouter);
 app.use('/api/v1/videos', videosRouter);
-app.use('/api/v1/items', itemsRouter);
+app.use('/api/v1/carts', cartsRouter);
 app.use('/api/v1/users', authRouter);
 app.all('*', (req, res, next) => {
     const err = new CustomError(`Can't find ${req.originalUrl} on this server!`, 404);

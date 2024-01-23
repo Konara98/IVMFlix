@@ -1,10 +1,11 @@
 const express = require('express');
 const authController = require('./../Controllers/authController');
+const cartsController = require('../Controllers/cartsController');
 
 const authRouter = express.Router();
 
 authRouter.route('/signup')
-    .post(authController.signup);
+    .post(authController.signup, authController.restrict('user'), cartsController.createCart);
 
 authRouter.route('/signin')
     .post(authController.login);

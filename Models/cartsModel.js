@@ -5,6 +5,7 @@ const itemSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Name is required!'],
+        unique: true,
         maxlength: [100, 'Item name must not have more than 100 characters'],
         minlength: [3, 'Item name must not have less than 3 characters'],
         trim: true
@@ -21,12 +22,24 @@ const itemSchema = new mongoose.Schema({
     quantity: {
         type: Number,
         required: [true, 'Quantity is required!']
-    },
-    createdBy: {
-        type: String
     }
 })
 
-const Item = mongoose.model('item', itemSchema);
+const cartSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Please enter your name']
+    },
+    email: {
+        type: String,
+        required: [true, 'Please enter an email'],
+        unique: true,
+        lowercase: true,
+        validate: [validator.isEmail, 'Please enter a valid email']
+    },
+    items: [itemSchema]
+})
 
-module.exports = Item;
+const Cart = mongoose.model('cart', cartSchema);
+
+module.exports = Cart;
