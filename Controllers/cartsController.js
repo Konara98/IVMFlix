@@ -103,20 +103,21 @@ exports.deleteItemInCart = asyncErrorHandler(async (req, res, next) => {
  * Controller function to delete all items in the cart
  */
 exports.deleteAllItemsInCart = asyncErrorHandler(async (req, res, next) => {
-    const deletedAllItem = await Cart.findOneAndUpdate({email: req.user.email},
-                            {"$pull": {'items': {}}},
-                            {new: true, runValidators: true});
+    await Cart.findOneAndUpdate({email: req.user.email},
+                                {"$pull": {'items': {}}},
+                                {new: true, runValidators: true});
+});
 
-    if(!deletedAllItem){
-        const error = new CustomError('Items are not found!', 404);
+/**
+ * Controller function to select all items in the cart excluding _id, __v fields
+ */
+exports.getAllItemsInCartExcludingIDFields = asyncErrorHandler(async (req, res, next) => {
+    const order = await Cart.findOne({email: req.user.email}).select({'items._id': 0, '__v': 0 });
+    req.body.items = order.items;
+
+    if(order.items.length == 0){
+        const error = new CustomError('Cart is empty!', 404);
         return next(error);
     }
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            items_length: deletedAllItem.items.length,
-            deletedAllItem
-        }
-    })
+    next();
 });

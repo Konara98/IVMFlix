@@ -24,7 +24,7 @@ const itemSchema = new mongoose.Schema({
     }
 })
 
-const cartSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Please enter your name']
@@ -32,13 +32,12 @@ const cartSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Please enter an email'],
-        unique: true,
         lowercase: true,
         validate: [validator.isEmail, 'Please enter a valid email']
     },
     items: [itemSchema]
 })
 
-const Cart = mongoose.model('cart', cartSchema);
+const Order = mongoose.model('order', orderSchema);
 
-module.exports = Cart;
+module.exports = Order;
