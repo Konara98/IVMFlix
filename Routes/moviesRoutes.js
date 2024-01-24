@@ -4,6 +4,9 @@ const authController = require('./../Controllers/authController');
 
 const moviesRouter = express.Router();
 
+/**
+ * Define routes for handling movie-related functionality.
+ */
 moviesRouter.route('/highest-rated')
     .get(authController.protect, moviesController.getHighestRatedMovies, moviesController.getAllMovies)
 

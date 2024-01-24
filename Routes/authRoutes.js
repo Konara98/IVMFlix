@@ -4,6 +4,9 @@ const cartsController = require('../Controllers/cartsController');
 
 const authRouter = express.Router();
 
+/**
+ * Define routes for authentication.
+ */
 authRouter.route('/signup')
     .post(authController.signup, authController.restrict('user'), cartsController.createCart);
 

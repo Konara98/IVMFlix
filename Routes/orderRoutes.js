@@ -5,6 +5,9 @@ const cartController = require('../Controllers/cartsController');
 
 const ordersRouter = express.Router();
 
+/**
+ * Define routes for handling order-related functionality
+ */
 ordersRouter.route('/')
     .get(authController.protect, authController.restrict('user'), ordersController.getAllOrders)
 

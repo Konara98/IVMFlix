@@ -4,6 +4,9 @@ const authController = require('./../Controllers/authController');
 
 const videosRouter = express.Router();
 
+/**
+ * Define routes for handling video-related functionality
+ */
 videosRouter.route('/highest-rated')
     .get(authController.protect, videosController.getHighestRatedVideos, videosController.getAllVideos)
 
