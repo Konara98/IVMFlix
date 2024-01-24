@@ -2,6 +2,9 @@ const Cart = require('../Models/cartsModel');
 const asyncErrorHandler = require('../Utils/asyncErrorHandler');
 const CustomError = require('../Utils/CustomError');
 
+/**
+ * Controller function to get all items in the cart for specific user
+ */
 exports.getAllItemsInCart = asyncErrorHandler(async (req, res, next) => {
     //Use findOne method since there is only one cart for each user
     const cart = await Cart.findOne({email: req.user.email});
@@ -15,6 +18,9 @@ exports.getAllItemsInCart = asyncErrorHandler(async (req, res, next) => {
     })
 });
 
+/**
+ * Controller function to create a cart for specific user(When user sign up he/she has been given a one cart)
+ */
 exports.createCart = asyncErrorHandler(async (req, res, next) => { 
     //Create a cart for newly singed up users     
     req.body.email = req.user.email;
@@ -22,10 +28,14 @@ exports.createCart = asyncErrorHandler(async (req, res, next) => {
     await Cart.create(req.body);
 });
 
+/**
+ * Controller function to add items to cart
+ */
 exports.addItemToCart = asyncErrorHandler(async (req, res, next) => {
     //Use findOne method since there is only one cart for each user
     const cart = await Cart.findOne({email: req.user.email});
 
+    //Avoid duplicating items in the cart
     for(let i = 0; i < cart.items.length; i++){
         if(cart.items[i].name === req.body.name){
             const error = new CustomError('Item with that name is already exists!', 409);
@@ -45,6 +55,9 @@ exports.addItemToCart = asyncErrorHandler(async (req, res, next) => {
     })
 });
 
+/**
+ * Controller function to update items in the cart
+ */
 exports.updateItemInCart = asyncErrorHandler(async (req, res, next) => {
     const updatedItem = await Cart.findOneAndUpdate({email: req.user.email, 'items.name': req.params.name},
                             { "$set": {'items.$.quantity': req.body.quantity}},
@@ -64,6 +77,9 @@ exports.updateItemInCart = asyncErrorHandler(async (req, res, next) => {
     })
 });
 
+/**
+ * Controller function to delete item in the cart
+ */
 exports.deleteItemInCart = asyncErrorHandler(async (req, res, next) => {
     const deletedItem = await Cart.findOneAndUpdate({email: req.user.email, 'items.name': req.params.name},
                             {"$pull": {'items': {"name": req.params.name}}},
@@ -83,6 +99,9 @@ exports.deleteItemInCart = asyncErrorHandler(async (req, res, next) => {
     })
 });
 
+/**
+ * Controller function to delete all items in the cart
+ */
 exports.deleteAllItemsInCart = asyncErrorHandler(async (req, res, next) => {
     const deletedAllItem = await Cart.findOneAndUpdate({email: req.user.email},
                             {"$pull": {'items': {}}},

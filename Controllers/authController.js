@@ -11,6 +11,9 @@ const signToken = (id, email) => {
     })
 }
 
+/**
+ * Controller function to handle sign up
+ */
 exports.signup = asyncErrorHandler(async (req, res, next) => {
     const newUser = await User.create(req.body);
 
@@ -23,10 +26,15 @@ exports.signup = asyncErrorHandler(async (req, res, next) => {
             newUser
         }
     })
-    req.user = newUser;    //add user details to request
+
+    //Add user details to request for using next controllers
+    req.user = newUser;    
     next();
 });
 
+/**
+ * Controller function to handle log in
+ */
 exports.login = asyncErrorHandler(async (req, res, next) => {
     const {email, password} = req.body;
 
@@ -54,6 +62,9 @@ exports.login = asyncErrorHandler(async (req, res, next) => {
     })
 });
 
+/**
+ * Controller function to allow access to routes
+ */
 exports.protect = asyncErrorHandler(async (req, res, next) => {
     //1. Read token and check if it exists
     const testToken = req.headers.authorization;
@@ -88,6 +99,9 @@ exports.protect = asyncErrorHandler(async (req, res, next) => {
     next();
 });
 
+/**
+ * Controller function to handle authorization
+ */
 exports.restrict = (role) => {
     return (req, res, next) => {
         if(req.user.role !== role){
@@ -97,6 +111,9 @@ exports.restrict = (role) => {
     }
 }
 
+/**
+ * Controller function to handle forgot password
+ */
 exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
     //1. Get user based on posted email
     const email = req.body.email;
@@ -136,6 +153,9 @@ exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
     }
 })
 
+/**
+ * Controller function to handle reset password
+ */
 exports.resetPassword = asyncErrorHandler(async (req, res, next) => {
     const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
     const user = await User.findOne({passwordResetToken: token, passwordResetTokenExpire: {$gt: Date.now()}});
