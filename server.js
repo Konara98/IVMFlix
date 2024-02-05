@@ -13,9 +13,8 @@ process.on('uncaughtException', (err) => {
 const app = require('./app');               // Import the main application.
 
 //connect database
-mongoose.connect(process.env.CONN_STR, {
-    useNewUrlParser: true
-}).then((conn) => {
+mongoose.connect(process.env.CONN_STR)
+    .then((conn) => {
     console.log('DB connection succesful!');
 })
 
