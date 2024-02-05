@@ -21,6 +21,17 @@ exports.signUp = (name, email, password, agent = 'none') => {
   });
 }
 
+exports.resendVerificationCode = (email) => {
+  return new Promise((resolve) => {
+    AwsConfig.getCognitoUser(email).resendConfirmationCode((err, result) => {
+      if (err) {
+        return resolve({ statusCode: 422, response: err });
+      }
+      return resolve({ statusCode: 200, response: result });
+    });
+  });
+}
+
 exports.verify = (email, code) => {
   return new Promise((resolve) => {
     AwsConfig.getCognitoUser(email).confirmRegistration(code, true, (err, result) => {

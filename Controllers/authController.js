@@ -32,6 +32,14 @@ exports.signUp = asyncErrorHandler(async (req, res, next) => {
 });
 
 /**
+ * Controller function to resend verification code
+ */
+exports.resendVerificationCode = asyncErrorHandler(async (req, res, next) => {
+    const response = await Cognito.resendVerificationCode(req.body.email);
+    res.status(response.statusCode).json(response);
+});
+
+/**
  * Controller function to verify sign up(email)
  */
 exports.verify = asyncErrorHandler(async (req, res, next) => {

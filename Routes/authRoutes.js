@@ -10,6 +10,9 @@ const authRouter = express.Router();
 authRouter.route('/signup')
     .post(authController.signUp, cartsController.createCart);
 
+authRouter.route('/resendverificationcode')
+    .post(authController.resendVerificationCode);
+
 authRouter.route('/verify')
     .post(authController.verify); 
 
