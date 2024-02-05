@@ -8,11 +8,11 @@ const cartsRouter = express.Router();
  * Define routes for handling cart-related functionality.
  */
 cartsRouter.route('/')
-    .get(authController.protect, authController.restrict('user'), cartsController.getAllItemsInCart)
-    .patch(authController.protect, authController.restrict('user'), cartsController.addItemToCart)
+    .get(authController.protect, authController.restrict('User'), cartsController.getAllItemsInCart)
+    .patch(authController.protect, authController.restrict('User'), cartsController.addItemToCart)
 
 cartsRouter.route('/:name')
-    .patch(authController.protect, authController.restrict('user'), cartsController.updateItemInCart)
-    .delete(authController.protect, authController.restrict('user'), cartsController.deleteItemInCart)
+    .patch(authController.protect, authController.restrict('User'), cartsController.updateItemInCart)
+    .delete(authController.protect, authController.restrict('User'), cartsController.deleteItemInCart)
 
 module.exports = cartsRouter;

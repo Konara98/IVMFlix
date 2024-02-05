@@ -9,13 +9,13 @@ const ordersRouter = express.Router();
  * Define routes for handling order-related functionality
  */
 ordersRouter.route('/')
-    .get(authController.protect, authController.restrict('user'), ordersController.getAllOrders)
+    .get(authController.protect, authController.restrict('User'), ordersController.getAllOrders)
 
 ordersRouter.route('/place-order')
-    .post(authController.protect, authController.restrict('user'), cartController.getAllItemsInCartExcludingIDFields, ordersController.createOrder, cartController.deleteAllItemsInCart)
+    .post(authController.protect, authController.restrict('User'), cartController.getAllItemsInCartExcludingIDFields, ordersController.createOrder, cartController.deleteAllItemsInCart)
 
 ordersRouter.route('/:id')
-    .get(authController.protect, authController.restrict('user'), ordersController.getOrder)
-    .delete(authController.protect, authController.restrict('user'), ordersController.deleteOrder)
+    .get(authController.protect, authController.restrict('User'), ordersController.getOrder)
+    .delete(authController.protect, authController.restrict('User'), ordersController.deleteOrder)
 
 module.exports = ordersRouter;

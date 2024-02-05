@@ -8,16 +8,18 @@ const authRouter = express.Router();
  * Define routes for authentication.
  */
 authRouter.route('/signup')
-    .post(authController.signup, authController.restrict('user'), cartsController.createCart);
+    .post(authController.signUp, cartsController.createCart);
+
+authRouter.route('/verify')
+    .post(authController.verify); 
 
 authRouter.route('/signin')
-    .post(authController.login);
+    .post(authController.signIn);
 
 authRouter.route('/forgotpassword')
     .post(authController.forgotPassword);
 
-authRouter.route('/resetpassword/:token')
-    .patch(authController.resetPassword);
-
+authRouter.route('/resetpassword')
+    .post(authController.resetPassword);
 
 module.exports = authRouter;

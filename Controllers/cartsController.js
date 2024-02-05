@@ -22,10 +22,12 @@ exports.getAllItemsInCart = asyncErrorHandler(async (req, res, next) => {
  * Controller function to create a cart for specific user(When user sign up he/she has been given a one cart)
  */
 exports.createCart = asyncErrorHandler(async (req, res, next) => { 
-    //Create a cart for newly singed up users     
+    //Create a cart for newly singed up users    
     req.body.email = req.user.email;
     req.body.name = req.user.name;
     await Cart.create(req.body);
+    
+    res.status(req.previousResponse.statusCode).json(req.previousResponse);
 });
 
 /**
