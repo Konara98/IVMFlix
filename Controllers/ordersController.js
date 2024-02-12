@@ -1,6 +1,7 @@
 const Order = require('../Models/ordersModel');
 const asyncErrorHandler = require('../Utils/asyncErrorHandler');
 const CustomError = require('../Utils/CustomError');
+const CalculateTotalPrice = require('../Utils/CalculateTotalPrice');
 
 /**
  * Controller function to get all orders for specific user
@@ -42,6 +43,8 @@ exports.getOrder = asyncErrorHandler(async (req, res, next) => {
 exports.createOrder = asyncErrorHandler(async (req, res, next) => { 
     req.body.email = req.user.email;
     req.body.name = req.user.name;
+    req.body.total_price = CalculateTotalPrice.calculateTotalPrice(req.body.items);
+
     const newOrder = await Order.create(req.body);
 
     res.status(201).json({

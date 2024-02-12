@@ -35,7 +35,10 @@ const orderSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, 'Please enter a valid email']
     },
-    items: [itemSchema]
+    items: [itemSchema],
+    total_price: {
+        type : Number
+    }
 })
 
 const Order = mongoose.model('order', orderSchema);
