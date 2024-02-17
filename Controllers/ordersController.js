@@ -72,3 +72,18 @@ exports.deleteOrder = asyncErrorHandler(async (req, res, next) => {
         data: null
     })
 });
+
+/**
+ * Controller function to get total price in specific order for specific id
+ */
+exports.getTotalPriceOfOrderById = asyncErrorHandler(async (req, res, next) => {
+    const order = await Order.findOne({_id: req.params.id});
+
+    if(!order){
+        const error = new CustomError('Order with that id is not found!', 404);
+        return next(error);
+    }
+
+    req.total_price = order.total_price;
+    next();
+});

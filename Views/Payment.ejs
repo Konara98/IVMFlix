@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<title>Stripe Payment Service</title>
+<body>
+	<h3>Welcome to Payment Gateway</h3>
+	<form action="/api/v1/payments/card-payment" method="POST">
+	<input type="hidden" name="total_price" id="total_price" value="<%= total_price %>">
+	<script
+		src="//checkout.stripe.com/v2/checkout.js"
+		class="stripe-button"
+		data-key="<%= key %>"
+		data-amount="<%= total_price*100 %>"
+		data-currency="usd"
+		data-name="IVMFlix"
+		data-description="Movies & Videos Downloder"
+		data-locale="auto" >
+		</script>
+	</form>
+</body>
+</html>
+
