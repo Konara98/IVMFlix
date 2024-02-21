@@ -1,4 +1,6 @@
 const Cart = require('../Models/cartsModel');
+const Movie = require('./../Models/movieModel');
+const Video = require('./../Models/videoModel');
 const asyncErrorHandler = require('../Utils/asyncErrorHandler');
 const CustomError = require('../Utils/CustomError');
 
@@ -37,15 +39,34 @@ exports.addItemToCart = asyncErrorHandler(async (req, res, next) => {
     //Use findOne method since there is only one cart for each user
     const cart = await Cart.findOne({email: req.user.email});
 
+    const movie = await Movie.find({_id: req.params.id});
+    const video = await Video.find({_id: req.params.id});
+
+    if(movie.length == 0 && video.length == 0){
+        const error = new CustomError('Item with that ID is not found!', 404);
+        return next(error);             //return: avoid run rest of the code
+    }
+
+    let item = (movie.length !== 0) ? movie : video;
+
+    item = {
+        item_id: item[0]._id,
+        name: item[0].name,
+        coverImage: item[0].coverImage,
+        price: item[0].price,
+        quantity: req.body.quantity
+    }
+
+
     //Avoid duplicating items in the cart
     for(let i = 0; i < cart.items.length; i++){
-        if(cart.items[i].name === req.body.name){
-            const error = new CustomError('Item with that name is already exists!', 409);
+        if(cart.items[i].item_id == item.item_id){
+            const error = new CustomError('Item with that ID is already exists!', 409);
             return next(error);
         }
     }
 
-    cart.items.push(req.body);
+    cart.items.push(item);
     await cart.save();
 
     res.status(200).json({
@@ -61,12 +82,12 @@ exports.addItemToCart = asyncErrorHandler(async (req, res, next) => {
  * Controller function to update items in the cart
  */
 exports.updateItemInCart = asyncErrorHandler(async (req, res, next) => {
-    const updatedItem = await Cart.findOneAndUpdate({email: req.user.email, 'items.name': req.params.name},
+    const updatedItem = await Cart.findOneAndUpdate({email: req.user.email, 'items.item_id': req.params.id},
                             { "$set": {'items.$.quantity': req.body.quantity}},
                             {new: true, runValidators: true});  // Update the quantity based on the request body
 
     if(!updatedItem){
-        const error = new CustomError('Item with that name is not found!', 404);
+        const error = new CustomError('Item with that ID is not found!', 404);
         return next(error);
     }
 
@@ -83,12 +104,12 @@ exports.updateItemInCart = asyncErrorHandler(async (req, res, next) => {
  * Controller function to delete item in the cart
  */
 exports.deleteItemInCart = asyncErrorHandler(async (req, res, next) => {
-    const deletedItem = await Cart.findOneAndUpdate({email: req.user.email, 'items.name': req.params.name},
-                            {"$pull": {'items': {"name": req.params.name}}},
+    const deletedItem = await Cart.findOneAndUpdate({email: req.user.email, 'items.item_id': req.params.id},
+                            {"$pull": {'items': {"item_id": req.params.id}}},
                             {new: true, runValidators: true});
 
     if(!deletedItem){
-        const error = new CustomError('Item with that name is not found!', 404);
+        const error = new CustomError('Item with that ID is not found!', 404);
         return next(error);
     }
 

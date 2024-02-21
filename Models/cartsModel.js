@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 const itemSchema = new mongoose.Schema({
+    item_id: {
+        type: String,
+        unique: true
+    },
     name: {
         type: String,
         required: [true, 'Name is required!'],

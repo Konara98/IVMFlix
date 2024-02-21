@@ -20,7 +20,7 @@ moviesRouter.route('/')
     .get(authController.protect, moviesController.getAllMovies)
     .post(authController.protect, authController.restrict('Admin'), moviesController.createMovie)
 
-moviesRouter.route('/:name')
+moviesRouter.route('/:id')
     .get(authController.protect, moviesController.getMovie)
     .patch(authController.protect, authController.restrict('Admin'), moviesController.updateMovie)
     .delete(authController.protect, authController.restrict('Admin'), moviesController.deleteMovie)

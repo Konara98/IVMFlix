@@ -32,10 +32,10 @@ exports.getAllVideos = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getVideo = asyncErrorHandler(async (req, res, next) => {
-    const video = await Video.find(req.params);
+    const video = await Video.find({_id: req.params.id});
 
     if(video.length == 0){
-        const error = new CustomError('Video with that name is not found!', 404);
+        const error = new CustomError('Video with that ID is not found!', 404);
         return next(error);             //return: avoid run rest of the code
     }
 
@@ -60,10 +60,10 @@ exports.createVideo = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.updateVideo = asyncErrorHandler(async (req, res, next) => {
-    const updatedVideo = await Video.findOneAndUpdate(req.params, req.body, {new: true, runValidators: true});
+    const updatedVideo = await Video.findOneAndUpdate({_id: req.params.id}, req.body, {new: true, runValidators: true});
 
     if(!updatedVideo){
-        const error = new CustomError('Video with that name is not found!', 404);
+        const error = new CustomError('Video with that ID is not found!', 404);
         return next(error);
     }
 
@@ -76,10 +76,10 @@ exports.updateVideo = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.deleteVideo = asyncErrorHandler(async (req, res, next) => {
-    const deletedVideo = await Video.findOneAndDelete(req.params);
+    const deletedVideo = await Video.findOneAndDelete({_id: req.params.id});
 
     if(!deletedVideo){
-        const error = new CustomError('Video with that name is not found!', 404);
+        const error = new CustomError('Video with that ID is not found!', 404);
         return next(error);
     }
 

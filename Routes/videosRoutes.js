@@ -20,7 +20,7 @@ videosRouter.route('/')
     .get(authController.protect, videosController.getAllVideos)
     .post(authController.protect, authController.restrict('Admin'), videosController.createVideo)
 
-videosRouter.route('/:name')
+videosRouter.route('/:id')
     .get(authController.protect, videosController.getVideo)
     .patch(authController.protect, authController.restrict('Admin'), videosController.updateVideo)
     .delete(authController.protect, authController.restrict('Admin'), videosController.deleteVideo)

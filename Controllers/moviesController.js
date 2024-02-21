@@ -32,10 +32,10 @@ exports.getAllMovies = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getMovie = asyncErrorHandler(async (req, res, next) => {
-    const movie = await Movie.find({name: req.params.name});
+    const movie = await Movie.find({_id: req.params.id});
 
     if(movie.length == 0){
-        const error = new CustomError('Movie with that name is not found!', 404);
+        const error = new CustomError('Movie with that ID is not found!', 404);
         return next(error);             //return: avoid run rest of the code
     }
 
@@ -60,10 +60,10 @@ exports.createMovie = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.updateMovie = asyncErrorHandler(async (req, res, next) => {
-    const updatedMovie = await Movie.findOneAndUpdate(req.params, req.body, {new: true, runValidators: true});
+    const updatedMovie = await Movie.findOneAndUpdate({_id: req.params.id}, req.body, {new: true, runValidators: true});
 
     if(!updatedMovie){
-        const error = new CustomError('Movie with that name is not found!', 404);
+        const error = new CustomError('Movie with that ID is not found!', 404);
         return next(error);
     }
 
@@ -76,10 +76,10 @@ exports.updateMovie = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.deleteMovie = asyncErrorHandler(async (req, res, next) => {
-    const deletedMovie = await Movie.findOneAndDelete(req.params);
+    const deletedMovie = await Movie.findOneAndDelete({_id: req.params.id});
 
     if(!deletedMovie){
-        const error = new CustomError('Movie with that name is not found!', 404);
+        const error = new CustomError('Movie with that ID is not found!', 404);
         return next(error);
     }
 

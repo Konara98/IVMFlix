@@ -9,9 +9,9 @@ const cartsRouter = express.Router();
  */
 cartsRouter.route('/')
     .get(authController.protect, authController.restrict('User'), cartsController.getAllItemsInCart)
-    .patch(authController.protect, authController.restrict('User'), cartsController.addItemToCart)
 
-cartsRouter.route('/:name')
+cartsRouter.route('/:id')
+    .post(authController.protect, authController.restrict('User'), cartsController.addItemToCart)
     .patch(authController.protect, authController.restrict('User'), cartsController.updateItemInCart)
     .delete(authController.protect, authController.restrict('User'), cartsController.deleteItemInCart)
 
