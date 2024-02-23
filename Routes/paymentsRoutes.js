@@ -12,6 +12,6 @@ paymentRouter.route('/:id')
     .get(ordersController.getTotalPriceOfOrderById, paymentController.renderPaymentPage);
 
 paymentRouter.route('/card-payment')
-    .post(paymentController.createPayment, paymentController.sendEmail);
+    .post(paymentController.createPayment, paymentController.sendDownloadLinksViaEmail);
 
 module.exports = paymentRouter;

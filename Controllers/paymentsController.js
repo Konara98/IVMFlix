@@ -1,5 +1,7 @@
 const asyncErrorHandler = require('../Utils/asyncErrorHandler');
-const generateDownloadLinks = require('../Utils/GenerateDownloadLinks')
+const Links = require('../Utils/GenerateDownloadLinks');
+const SES = require('../AWS-services/SESServices');
+const CustomError = require('./../Utils/CustomError');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -35,11 +37,16 @@ exports.createPayment = (req, res, next) => {
 		});
 	})
 	.then((charge) => {
+		console.log("Payment Successful!");
+
 		req.orderId = orderId;
 		next();
 	})
-	.catch((err) => {
-		res.send(err);	
+	.catch((error) => {
+		res.status(error.statusCode).json({          				
+			status: 'fail',
+			message: error.message
+		})	
 	});
 }
 
@@ -47,11 +54,22 @@ exports.createPayment = (req, res, next) => {
 /**
  * Controller function to send email for customers
  */
-exports.sendEmail = asyncErrorHandler(async (req, res, next) => {
-    const links = await generateDownloadLinks.generateDownloadLinks(req.orderId);
-    console.log(links);
+exports.sendDownloadLinksViaEmail = asyncErrorHandler(async (req, res, next) => {
+    const links = await Links.generateDownloadLinks(req.orderId);
 
-    res.status(200).json({          // If the payment is successful, send a success response
-        status: 'success'
+	// Check if no links were generated
+	if(links.length == 0){
+		const error = new CustomError('Order with that id is not found!', 404);
+		return next(error);
+	}
+
+	const email = links[0].email;
+	links.shift();										// Remove the first JSON object as it contains the email address
+
+	const data = await SES.sendEmail(email, links, 'lakshithakonara3@gmail.com');
+	
+    res.status(200).json({          					// If the payment is successful, send a success response
+        status: 'success',
+		data
     })
 });

@@ -3,8 +3,7 @@ const validator = require('validator');
 
 const itemSchema = new mongoose.Schema({
     item_id: {
-        type: String,
-        unique: true
+        type: String
     },
     name: {
         type: String,

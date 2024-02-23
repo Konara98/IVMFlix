@@ -1,5 +1,4 @@
 const Order = require('../Models/ordersModel');
-const CustomError = require('../Utils/CustomError');
 const S3 = require('../AWS-services/S3Services');
 const Movie = require('./../Models/movieModel');
 const Video = require('./../Models/videoModel');
@@ -11,14 +10,15 @@ exports.generateDownloadLinks = async (orderId) => {
     // Find the order based on the provided order ID
     const order = await Order.findOne({_id: orderId});
 
-    // Check if the order exists
-    if(!order){
-        const error = new CustomError('Order with that id is not found!', 404);
-        return next(error);
-    }
-
     // Initialize an array to store the email and download links
     let downloadLinks = [];
+
+    // Check if the order exists
+    if(!order){
+        return downloadLinks;
+    }
+
+    //Store email of the user
     downloadLinks.push({
         email: order.email
     });
