@@ -17,8 +17,11 @@ exports.generateDownloadLinks = async (orderId) => {
         return next(error);
     }
 
-    // Initialize an array to store the download links
+    // Initialize an array to store the email and download links
     let downloadLinks = [];
+    downloadLinks.push({
+        email: order.email
+    });
 
     // Iterate through each item in the order
     let file_path, file_name, duration;
