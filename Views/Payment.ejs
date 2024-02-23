@@ -4,6 +4,7 @@
 <body>
 	<h3>Welcome to Payment Gateway</h3>
 	<form action="/api/v1/payments/card-payment" method="POST">
+	<input type="hidden" name="order_id" id="order_id" value="<%= order_id %>">
 	<input type="hidden" name="total_price" id="total_price" value="<%= total_price %>">
 	<script
 		src="//checkout.stripe.com/v2/checkout.js"

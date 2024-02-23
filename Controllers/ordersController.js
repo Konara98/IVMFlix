@@ -85,5 +85,6 @@ exports.getTotalPriceOfOrderById = asyncErrorHandler(async (req, res, next) => {
     }
 
     req.total_price = order.total_price;
+    req.order_id = req.params.id;
     next();
 });
