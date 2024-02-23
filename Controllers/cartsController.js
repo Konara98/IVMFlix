@@ -39,16 +39,20 @@ exports.addItemToCart = asyncErrorHandler(async (req, res, next) => {
     //Use findOne method since there is only one cart for each user
     const cart = await Cart.findOne({email: req.user.email});
 
+     // Find the movie and video corresponding to the provided ID
     const movie = await Movie.find({_id: req.params.id});
     const video = await Video.find({_id: req.params.id});
 
+    // Check if either movie or video is found with the provided ID
     if(movie.length == 0 && video.length == 0){
         const error = new CustomError('Item with that ID is not found!', 404);
         return next(error);             //return: avoid run rest of the code
     }
 
+    // Determine whether the item is a movie or a video
     let item = (movie.length !== 0) ? movie : video;
 
+    // Define the item object to be added to the cart
     item = {
         item_id: item[0]._id,
         name: item[0].name,
@@ -66,6 +70,7 @@ exports.addItemToCart = asyncErrorHandler(async (req, res, next) => {
         }
     }
 
+    // Add the item to the cart and save the changes
     cart.items.push(item);
     await cart.save();
 
