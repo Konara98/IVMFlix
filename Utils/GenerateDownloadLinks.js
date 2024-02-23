@@ -1,5 +1,4 @@
 const Order = require('../Models/ordersModel');
-const asyncErrorHandler = require('../Utils/asyncErrorHandler');
 const CustomError = require('../Utils/CustomError');
 const S3 = require('../AWS-services/S3Services');
 const Movie = require('./../Models/movieModel');
@@ -8,15 +7,18 @@ const Video = require('./../Models/videoModel');
 /**
  * Controller function to generate download links for items in an order
  */
-exports.generateDownloadLinks = asyncErrorHandler(async (req, res, next) => {
+exports.generateDownloadLinks = async (orderId) => {
     // Find the order based on the provided order ID
-    const order = await Order.findOne({_id: req.orderId});
+    const order = await Order.findOne({_id: orderId});
 
     // Check if the order exists
     if(!order){
         const error = new CustomError('Order with that id is not found!', 404);
         return next(error);
     }
+
+    // Initialize an array to store the download links
+    let downloadLinks = [];
 
     // Iterate through each item in the order
     let file_path, file_name, duration;
@@ -38,10 +40,13 @@ exports.generateDownloadLinks = asyncErrorHandler(async (req, res, next) => {
 
         // Generate a pre-signed URL for the item
         const link = await S3.getPreSingedUrl(file_path, file_name, duration);
-        console.log(order.items[i].name, link);
+
+        // Create an object with name and URL and push it to the downloadLinks array
+        downloadLinks.push({
+            name: order.items[i].name,
+            url: link
+        });
     }
     
-    res.status(200).json({          // If the payment is successful, send a success response
-        status: 'success'
-    })
-});
+    return downloadLinks;
+}

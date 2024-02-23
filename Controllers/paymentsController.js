@@ -1,5 +1,5 @@
-const Order = require('../Models/ordersModel');
-const CustomError = require('../Utils/CustomError');
+const asyncErrorHandler = require('../Utils/asyncErrorHandler');
+const generateDownloadLinks = require('../Utils/GenerateDownloadLinks')
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -42,3 +42,16 @@ exports.createPayment = (req, res, next) => {
 		res.send(err);	
 	});
 }
+
+
+/**
+ * Controller function to send email for customers
+ */
+exports.sendEmail = asyncErrorHandler(async (req, res, next) => {
+    const links = await generateDownloadLinks.generateDownloadLinks(req.orderId);
+    console.log(links);
+
+    res.status(200).json({          // If the payment is successful, send a success response
+        status: 'success'
+    })
+});
