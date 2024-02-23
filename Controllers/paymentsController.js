@@ -2,6 +2,7 @@ const asyncErrorHandler = require('../Utils/asyncErrorHandler');
 const Links = require('../Utils/GenerateDownloadLinks');
 const SES = require('../AWS-services/SESServices');
 const CustomError = require('./../Utils/CustomError');
+const Order = require('../Models/ordersModel');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -64,11 +65,13 @@ exports.sendDownloadLinksViaEmail = asyncErrorHandler(async (req, res, next) => 
 	}
 
 	const email = links[0].email;
-	links.shift();										// Remove the first JSON object as it contains the email address
+	links.shift();											// Remove the first JSON object as it contains the email address
 
 	const data = await SES.sendEmail(email, links, 'lakshithakonara3@gmail.com');
+
+	await Order.findOneAndDelete({_id: req.orderId});		//Delete the order after sending the email	
 	
-    res.status(200).json({          					// If the payment is successful, send a success response
+    res.status(200).json({          						// If the payment is successful, send a success response
         status: 'success',
 		data
     })
