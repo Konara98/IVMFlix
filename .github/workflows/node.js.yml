@@ -1,0 +1,59 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: |
+        touch config.env
+        echo "${{ secrets.AWS_COGNITO_CLIENT_ID }}" > config.env
+        echo "${{ secrets.AWS_COGNITO_IDENTITY_POOL_ID }}" > config.env
+        echo "${{ secrets.AWS_COGNITO_KID }}" > config.env
+        echo "${{ secrets.AWS_COGNITO_REGION }}" > config.env
+        echo "${{ secrets.AWS_COGNITO_USER_POOL_ID }}" > config.env
+        echo "${{ secrets.BUCKET_NAME }}" > config.env
+        echo "${{ secrets.CONN_STR }}" > config.env
+        echo "${{ secrets.DB_PASSWORD }}" > config.env
+        echo "${{ secrets.DB_USER }}" > config.env
+        echo "${{ secrets.EMAIL_HOST }}" > config.env
+        echo "${{ secrets.EMAIL_PASSWORD }}" > config.env
+        echo "${{ secrets.EMAIL_PORT }}" > config.env
+        echo "${{ secrets.EMAIL_USER }}" > config.env
+        echo "${{ secrets.IAM_USER_ACCESS_KEY_ID }}" > config.env
+        echo "${{ secrets.IAM_USER_SECRETE_ACCESS_KEY_ID }}" > config.env
+        echo "${{ secrets.LOGIN_EXPIRES }}" > config.env
+        echo "${{ secrets.NODE_ENV }}" > config.env
+        echo "${{ secrets.PORT }}" > config.env
+        echo "${{ secrets.S3_BUCKET_REGION }}" > config.env
+        echo "${{ secrets.S3_ENDPOINT }}" > config.env
+        echo "${{ secrets.SECRETE_STR }}" > config.env
+        echo "${{ secrets.SES_ACCESS_KEY_ID }}" > config.env
+        echo "${{ secrets.SES_REGION }}" > config.env
+        echo "${{ secrets.SES_SECRETE_ACCESS_KEY_ID }}" > config.env
+        echo "${{ secrets.STRIPE_PUBLIC_KEY }}" > config.env
+        echo "${{ secrets.STRIPE_SECRET_KEY }}" > config.env
+        
